@@ -20,5 +20,5 @@ EXPOSE 8080
 
 WORKDIR /app
 
-COPY --from=build-env /app/target/twitteruserservice-0.0.1-SNAPSHOT.jar ./twitteruserservice-0.0.1-SNAPSHOT.jar
-CMD ["/usr/bin/java", "-jar", "/app/twitteruserservice-0.0.1-SNAPSHOT.jar"]
+COPY --from=build-env /app/target/TwitterUserService-0.0.1-SNAPSHOT.jar ./TwitterUserService-0.0.1-SNAPSHOT.jar
+CMD ["/usr/bin/java", "-jar", "/app/TwitterUserService-0.0.1-SNAPSHOT.jar"]
