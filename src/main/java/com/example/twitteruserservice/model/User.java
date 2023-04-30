@@ -12,7 +12,6 @@ public class User {
     @Id
     @GeneratedValue
     private Integer id;
-
     private String firstname;
     private String lastname;
     private String email;
