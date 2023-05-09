@@ -11,6 +11,19 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMqConfig {
 
     @Bean
+    public Declarables authUser(){
+        return new Declarables(
+                new FanoutExchange("x.auth-service"),
+                new Queue("q.authenticate" ),
+                new Binding("q.authenticate", Binding.DestinationType.QUEUE, "x.auth-service", "authenticate", null));
+    }
+
+    @Bean
+    public Queue authenticateQueue() {
+        return new Queue("authenticate", true);
+    }
+
+    @Bean
     public Declarables createUser(){
         return new Declarables(
                 new FanoutExchange("x.user-service"),
