@@ -15,7 +15,7 @@
     <description>TwitterUserService</description>
     <properties>
         <java.version>19</java.version>
-        <maven.compiler.source>19</maven.compiler.source>
+        <maven.compiler.source>19</maven.compiler.source> <!-- maven compiler -->
         <maven.compiler.target>19</maven.compiler.target>
         <spring-cloud.version>2022.0.2</spring-cloud.version>
         <sonar.organization>semm6</sonar.organization>
