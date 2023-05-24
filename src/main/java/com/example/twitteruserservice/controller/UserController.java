@@ -48,10 +48,10 @@ public class UserController {
         }
     }
 
-    @DeleteMapping(value = "/delete/{id}")
-    public String deleteUser(@PathVariable int id) {
+    @DeleteMapping(value = "/delete/{email}")
+    public String deleteUserByEmail(@PathVariable String email) {
         try {
-            return service.deleteUser(id);
+            return service.deleteUserByEmail(email);
         } catch (Exception e) {
             throw new RequestException("Cannot delete user");
         }

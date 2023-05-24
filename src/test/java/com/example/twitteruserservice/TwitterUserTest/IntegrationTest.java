@@ -59,11 +59,11 @@ public class IntegrationTest {
 
     @Test
     public void deleteUser() throws Exception {
-        mockMvc.perform(delete("/api/delete/{id}", 1))
+        mockMvc.perform(delete("/api/delete/{email}", "test@gmail.com"))
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        verify(userService).deleteUser(1);
+        verify(userService).deleteUserByEmail("test@gmail.com");
     }
 
     @Test

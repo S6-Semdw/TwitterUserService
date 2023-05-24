@@ -72,13 +72,23 @@ public class UserService {
     }
 
     // Delete user by email
+//    public String deleteUserByEmail(String email) {
+//        try {
+//            // Delete the user by email
+//            userRepo.deleteByEmail(email);
+//            return "User deleted: " + email;
+//        } catch (Exception e) {
+//            throw new RequestException("Cannot delete user");
+//        }
+//    }
+
     public String deleteUserByEmail(String email) {
         try {
             // Find the user by email
             Optional<User> user = userRepo.findByEmail(email);
 
-            if (user != null) {
-                userRepo.delete(user);
+            if (user.isPresent()) {
+                userRepo.delete(user.get());
                 return "User deleted: " + email;
             } else {
                 return "User not found with email: " + email;
