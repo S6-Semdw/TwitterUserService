@@ -1,31 +1,57 @@
 package com.example.twitteruserservice.service;
 
+import com.example.twitteruserservice.config.AuthenticationResponse;
+import com.example.twitteruserservice.config.JwtService;
+import com.example.twitteruserservice.config.RegisterRequest;
 import com.example.twitteruserservice.exception.RequestException;
+import com.example.twitteruserservice.model.Role;
 import com.example.twitteruserservice.model.User;
 import com.example.twitteruserservice.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Autowired
     private RabbitTemplate template;
 
-    public UserService(UserRepository userRepo) {
+    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+    public AuthenticationResponse register(RegisterRequest request) throws JsonProcessingException {
+        var user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .build();
+        String json = new ObjectMapper().writeValueAsString(user);
+        template.convertAndSend("x.user-service", "registerUser", json);
+        userRepo.save(user);
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
+
+    }
 
     //get users
     public List<User> getUsers() {
@@ -45,39 +71,18 @@ public class UserService {
         }
     }
 
-    //post user
-    public User saveUser(User user) {
+    // Delete user by email
+    public String deleteUserByEmail(String email) {
         try {
-            userRepo.save(user);
-            String json = new ObjectMapper().writeValueAsString(user);
-            template.convertAndSend("x.user-service", "saveUser", json);
-            return user;
-        } catch (Exception e) {
-            log.error("Error creating user: " + e.getMessage());
-            throw new RequestException("Cannot create user", e);
-        }
-    }
+            // Find the user by email
+            Optional<User> user = userRepo.findByEmail(email);
 
-//    public User saveUser(User user) {
-//        try {
-//            userRepo.save(user);
-//            template.convertAndSend("x.user-service", "saveUser", user);
-//            return user;
-//        } catch (AmqpException e) {
-//            log.error("Error sending message to RabbitMQ: " + e.getMessage());
-//            throw new RequestException("Cannot create user", e);
-//        } catch (Exception e) {
-//            log.error("Error creating user: " + e.getMessage());
-//            throw new RequestException("Cannot create user", e);
-//        }
-//    }
-
-
-    //delete user
-    public String deleteUser(int id) {
-        try {
-            userRepo.deleteById(id);
-            return "User deleted" + id;
+            if (user != null) {
+                userRepo.delete(user);
+                return "User deleted: " + email;
+            } else {
+                return "User not found with email: " + email;
+            }
         } catch (Exception e) {
             throw new RequestException("Cannot delete user");
         }
@@ -88,8 +93,6 @@ public class UserService {
         try {
             User existingUser = userRepo.findById(user.getId()).orElse(null);
             assert existingUser != null;
-            existingUser.setFirstname(user.getFirstname());
-            existingUser.setLastname(user.getLastname());
             existingUser.setEmail(user.getEmail());
             existingUser.setPassword(user.getPassword());
             return userRepo.save(existingUser);
