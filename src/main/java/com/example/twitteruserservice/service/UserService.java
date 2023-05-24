@@ -71,17 +71,6 @@ public class UserService {
         }
     }
 
-    // Delete user by email
-//    public String deleteUserByEmail(String email) {
-//        try {
-//            // Delete the user by email
-//            userRepo.deleteByEmail(email);
-//            return "User deleted: " + email;
-//        } catch (Exception e) {
-//            throw new RequestException("Cannot delete user");
-//        }
-//    }
-
     public String deleteUserByEmail(String email) {
         try {
             // Find the user by email
@@ -89,6 +78,8 @@ public class UserService {
 
             if (user.isPresent()) {
                 userRepo.delete(user.get());
+                String json = new ObjectMapper().writeValueAsString(user.get()); // Extract User object using user.get()
+                template.convertAndSend("x.delete.user-service", "userDelete", json);
                 return "User deleted: " + email;
             } else {
                 return "User not found with email: " + email;
