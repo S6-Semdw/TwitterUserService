@@ -80,6 +80,7 @@ public class UserService {
                 userRepo.delete(user.get());
                 String json = new ObjectMapper().writeValueAsString(user.get()); // Extract User object using user.get()
                 template.convertAndSend("x.delete.user-service", "userDelete", json);
+                template.convertAndSend("x.user-delete", "deleteUser", json);
                 return "User deleted: " + email;
             } else {
                 return "User not found with email: " + email;

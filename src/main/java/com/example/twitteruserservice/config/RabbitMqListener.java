@@ -24,7 +24,7 @@ public class RabbitMqListener {
     public void receiveMessage(String jwtToken) {
         System.out.println("Received JWT token: " + jwtToken); //receive the JWT
 
-        template.convertAndSend("x.user-service", "token", jwtToken);
+        template.convertAndSend("x.user-token", "token", jwtToken);
     }
 
 }

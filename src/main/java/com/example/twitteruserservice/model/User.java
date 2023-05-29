@@ -27,14 +27,6 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
-//
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority(role.name()));
-//    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
