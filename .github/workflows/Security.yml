@@ -3,7 +3,7 @@ name: Security Scan
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   security-scan:
@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Install zap-cli
+        run: |
+          pip install zapcli
 
       - name: Start Microservice
         run: |
@@ -22,7 +26,7 @@ jobs:
 
       - name: Run OWASP ZAP Scan
         run: |
-          zap-cli --zap-path $(which zaproxy) quick-scan -t http://localhost:8090 -r quick-scan-report.html
+          zap-cli quick-scan -t http://localhost:8090 -r quick-scan-report.html
 
       - name: Stop Microservice
         run: |
@@ -36,3 +40,4 @@ jobs:
         with:
           name: OWASP ZAP Scan Report
           path: quick-scan-report.html
+
