@@ -6,38 +6,37 @@ on:
       - master
 
 jobs:
-  security-scan:
+  security_scan:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install zap-cli
-        run: |
-          pip install zapcli
-
-      - name: Start Microservice
-        run: |
-          mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8090" &
-
-      - name: Wait for Microservice to Start
-        run: sleep 10s
+      - name: Build with Maven
+        run: mvn clean install
 
       - name: Run OWASP ZAP Scan
         run: |
-          zap-cli quick-scan -u http://localhost:8090 -r file://${{ github.workspace }}/quick-scan-report.html
-          
-      - name: Stop Microservice
-        run: |
-          PID=$(lsof -ti :8090)
-          if [ -n "$PID" ]; then
-            kill $PID
-          fi
+          sudo apt-get update && sudo apt-get install -y python3-pip
+          pip3 install --user zapcli
+          zap-cli start
+          zap-cli quick-scan -u http://localhost:8090 --output /tmp/scan-report.json
 
-      - name: Save Scan Report as Artifact
+      - name: Convert Scan Report to HTML
+        run: |
+          pip3 install --user zap-cli-reports
+          zap-cli report -f html -o /home/runner/work/TwitterUserService/TwitterUserService/quick-scan-report.html -f /tmp/scan-report.json
+
+      - name: Upload Scan Report
         uses: actions/upload-artifact@v2
         with:
-          name: OWASP ZAP Scan Report
-          path: quick-scan-report.html
+          name: Security Scan Report
+          path: /home/runner/work/TwitterUserService/TwitterUserService/quick-scan-report.html
+
 
