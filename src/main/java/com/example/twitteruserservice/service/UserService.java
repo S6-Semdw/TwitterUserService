@@ -6,7 +6,7 @@ import com.example.twitteruserservice.config.RegisterRequest;
 import com.example.twitteruserservice.exception.RequestException;
 import com.example.twitteruserservice.model.Role;
 import com.example.twitteruserservice.model.User;
-import com.example.twitteruserservice.repository.UserRepository;
+import com.example.twitteruserservice.repository.TwitterUserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -23,14 +23,14 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepo;
+    private final TwitterUserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Autowired
     private RabbitTemplate template;
 
-    public UserService(UserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UserService(TwitterUserRepository userRepo, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -62,14 +62,18 @@ public class UserService {
         }
     }
 
-    //get user by id
-    public User getUserById(int id) {
+    //get user by email
+    public User getUserByEmail(String email) {
         try {
-            return userRepo.findById(id).orElse(null);
+            template.convertAndSend("x.get-user", "getUser", email);
+            template.convertAndSend("x.get-tweetUser", "getTweetUser", email);
+            return userRepo.findByEmail(email).orElse(null);
         } catch (Exception e) {
-            throw new RequestException("Cannot get user by id");
+            throw new RequestException("Failed to get user by email: " + e.getMessage(), e);
         }
     }
+
+
 
     public String deleteUserByEmail(String email) {
         try {
@@ -93,7 +97,7 @@ public class UserService {
     //update user
     public User updateUser(User user) {
         try {
-            User existingUser = userRepo.findById(user.getId()).orElse(null);
+            User existingUser = userRepo.findById(Integer.valueOf(user.getId())).orElse(null);
             assert existingUser != null;
             existingUser.setEmail(user.getEmail());
             existingUser.setPassword(user.getPassword());

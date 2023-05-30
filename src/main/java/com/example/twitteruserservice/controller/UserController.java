@@ -39,12 +39,12 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/user/{id}")
-    public User findUserById(@PathVariable int id) {
+    @GetMapping(value = "/user/{email}")
+    public User findUserById(@PathVariable String email) {
         try {
-            return service.getUserById(id);
+            return service.getUserByEmail(email);
         } catch (Exception e) {
-            throw new RequestException("Cannot get user by id");
+            throw new RequestException("Cannot get user by email");
         }
     }
 

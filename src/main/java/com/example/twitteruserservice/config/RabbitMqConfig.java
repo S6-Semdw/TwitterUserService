@@ -60,5 +60,37 @@ public class RabbitMqConfig {
                 new Queue("deleteUser" ),
                 new Binding("deleteUser", Binding.DestinationType.QUEUE, "x.user-delete", "deleteUser", null));
     }
+
+    @Bean
+    public Declarables getUser(){
+        return new Declarables(
+                new FanoutExchange("x.get-user"),
+                new Queue("getUser" ),
+                new Binding("getUser", Binding.DestinationType.QUEUE, "x.get-user", "getUser", null));
+    }
+
+    @Bean
+    public Declarables sendUser(){
+        return new Declarables(
+                new FanoutExchange("x.send-user"),
+                new Queue("sendUser" ),
+                new Binding("sendUser", Binding.DestinationType.QUEUE, "x.send-user", "sendUser", null));
+    }
+
+    @Bean
+    public Declarables getTweetUser(){
+        return new Declarables(
+                new FanoutExchange("x.get-tweetUser"),
+                new Queue("getTweetUser" ),
+                new Binding("getTweetUser", Binding.DestinationType.QUEUE, "x.get-tweetUser", "getTweetUser", null));
+    }
+
+    @Bean
+    public Declarables sendTweetUser(){
+        return new Declarables(
+                new FanoutExchange("x.send-tweetUser"),
+                new Queue("sendTweetUser" ),
+                new Binding("sendTweetUser", Binding.DestinationType.QUEUE, "x.send-tweetUser", "sendTweetUser", null));
+    }
 }
 

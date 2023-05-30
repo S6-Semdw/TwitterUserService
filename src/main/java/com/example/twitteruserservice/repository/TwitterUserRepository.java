@@ -1,11 +1,11 @@
 package com.example.twitteruserservice.repository;
 
 import com.example.twitteruserservice.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface TwitterUserRepository extends MongoRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 

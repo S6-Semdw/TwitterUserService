@@ -1,10 +1,11 @@
 package com.example.twitteruserservice.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,13 +18,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "user")
+@Document("user")
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
-    private Integer id;
+    private String id;
     private String email;
     private String password;
 
@@ -64,4 +63,3 @@ public class User implements UserDetails {
 
 
 }
-
