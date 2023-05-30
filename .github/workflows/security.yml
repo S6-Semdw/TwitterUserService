@@ -17,8 +17,10 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y python3-pip
           pip3 install --user zapcli
+          ZAP_PATH=$(which zaproxy)
           zap-cli start
-          zap-cli quick-scan -u https://localhost:8090 -r quick-scan-report.json --zap-path /path/to/zaproxy
+          zap-cli quick-scan -u https://localhost:8090 -r quick-scan-report.json --zap-path $ZAP_PATH
+
 
       - name: Convert Scan Report to HTML
         run: |
