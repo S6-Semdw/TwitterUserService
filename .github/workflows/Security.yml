@@ -1,0 +1,43 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install OWASP ZAP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zaproxy
+
+      - name: Start Microservice
+        run: |
+          mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8090" &
+
+      - name: Wait for Microservice to Start
+        run: sleep 10s
+
+      - name: Run OWASP ZAP Scan
+        run: |
+          zap-cli --zap-path $(which zaproxy) quick-scan -t http://localhost:8090 -r quick-scan-report.html
+
+      - name: Stop Microservice
+        run: |
+          PID=$(lsof -ti :8090)
+          if [ -n "$PID" ]; then
+            kill $PID
+          fi
+
+      - name: Save Scan Report as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: OWASP ZAP Scan Report
+          path: quick-scan-report.html
