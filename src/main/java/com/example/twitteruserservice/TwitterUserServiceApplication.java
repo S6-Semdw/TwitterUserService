@@ -10,4 +10,5 @@ public class TwitterUserServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(TwitterUserServiceApplication.class, args);
     }
+
 }
