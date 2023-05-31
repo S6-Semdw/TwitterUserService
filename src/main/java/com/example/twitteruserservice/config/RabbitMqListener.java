@@ -3,7 +3,6 @@ package com.example.twitteruserservice.config;
 import com.example.twitteruserservice.model.Tweet;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.hc.core5.http.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
