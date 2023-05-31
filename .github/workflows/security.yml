@@ -1,0 +1,36 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run OWASP ZAP Scan
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-pip
+          pip3 install --user zapcli
+          ZAP_PATH=$(which zaproxy)
+          zap-cli start
+          zap-cli quick-scan -u https://localhost:8090 -r quick-scan-report.json --zap-path $ZAP_PATH
+
+
+      - name: Convert Scan Report to HTML
+        run: |
+          pip3 install --user zap-cli-reports
+          zap-cli report -f html -o quick-scan-report.html -f quick-scan-report.json
+
+      - name: Upload Scan Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: Security Scan Report
+          path: quick-scan-report.html
+
+
