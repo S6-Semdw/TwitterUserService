@@ -115,7 +115,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.example.twitteruserservice</mainClass>
+                            <mainClass>com.example.TwitterUserService</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
